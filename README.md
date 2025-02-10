@@ -4,19 +4,19 @@
 
 This project aims to build a neural network for removing high-frequency noise from audio files. The core concept involves training a self-supervised autoencoder. The autoencoder will learn to encode and then decode the input audio signal.
 
-The project will follow a standard machine learning workflow, including data acquisition, preprocessing, model development, training, validation, and testing. A crucial aspect will be creating a robust and versatile model.
+The project will follow a standard machine learning process, including data acquisition, preprocessing, model development, training, validation, and testing. A crucial aspect will be creating a robust and versatile model.
 
 ## Part 2: Proposed Solution
 
-The proposed solution involves training a neural network to learn a mapping from noisy audio to clean audio. An autoencoder architecture is well-suited for this task. The noisy audio will be fed as input to the encoder, which will learn to compress the information into a lower-dimensional latent representation. The decoder will then take this latent representation and attempt to reconstruct the original, clean audio.
+The proposed technique is training a neural network to learn a mapping from noisy to clean audio. An autoencoder design is ideal for this task. The noisy audio will be supplied into the encoder, which will learn to compress the data into a lower-dimensional latent representation. The decoder will then use this latent representation to attempt to recover the original, clean audio.
 
-The key idea is that the network, in its attempt to reconstruct the input, will prioritize learning the dominant, meaningful features of the audio signal. High-frequency noise, being less structured and less correlated with the underlying signal, will be harder for the network to reproduce accurately. Consequently, the output of the decoder will be closer to the clean signal, effectively denoising the input.
+The key idea is that the network will prioritize learning the audio signal's dominant, important elements when attempting to recreate it. High-frequency noise, which is less organized and connected with the underlying signal, will be more difficult for the network to precisely recreate. As a result, the decoder's output will be closer to the clean signal, thus reducing the input noise.
 
-Several neural network architectures can be explored for the encoder and decoder, including Convolutional Neural Networks (CNNs) and Recurrent Neural Networks (RNNs), or a hybrid approach. CNNs are effective at capturing local patterns in the audio signal, while RNNs are good at modeling temporal dependencies. The choice of architecture will depend on experimentation and analysis of the audio data.
+For the encoder and decoder, a variety of neural network architectures can be considered, including Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and a hybrid approach. CNNs are good at detecting local patterns in audio signals, whereas RNNs excel at modeling temporal dependencies. Experimentation and analysis of auditory data will determine the architecture.
 
 ## Part 3: Dataset Acquisition and Preparation
 
-A crucial part of this project is acquiring a suitable dataset. Ideally, the dataset should consist of pairs of clean audio and corresponding noisy audio. Since obtaining perfectly paired data can be challenging, a practical approach is to start with a dataset of clean audio recordings and then synthetically add high-frequency noise to create the noisy counterparts.
+Finding an appropriate dataset is an essential component of this endeavor. The dataset should ideally include pairs of noisy and clean audio. A feasible method is to begin with a dataset of clean audio recordings and then artificially introduce high-frequency noise to create the noisy equivalents, although acquiring ideally paired data can be difficult.
 
 ### Data Sources:
 
