@@ -2,7 +2,6 @@ import os
 import librosa
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import layers, models
 from sklearn.model_selection import train_test_split
 
 # Parameters
@@ -57,18 +56,18 @@ noisy_train, noisy_val, clean_train, clean_val = train_test_split(noisy_data, cl
 
 # Autoencoder Model
 def create_autoencoder():
-    input_audio = layers.Input(shape=(audio_length,))
+    input_audio = tf.keras.layers.Input(shape=(audio_length,))
     # Encoder
-    encoded = layers.Dense(1024, activation='relu')(input_audio)
-    encoded = layers.Dense(512, activation='relu')(encoded)
-    encoded = layers.Dense(256, activation='relu')(encoded)
+    encoded = tf.keras.layers.Dense(1024, activation='relu')(input_audio)
+    encoded = tf.keras.layers.Dense(512, activation='relu')(encoded)
+    encoded = tf.keras.layers.Dense(256, activation='relu')(encoded)
 
     # Decoder
-    decoded = layers.Dense(512, activation='relu')(encoded)
-    decoded = layers.Dense(1024, activation='relu')(decoded)
-    decoded = layers.Dense(audio_length, activation='linear')(decoded)
+    decoded = tf.keras.layers.Dense(512, activation='relu')(encoded)
+    decoded = tf.keras.layers.Dense(1024, activation='relu')(decoded)
+    decoded = tf.keras.layers.Dense(audio_length, activation='linear')(decoded)
 
-    autoencoder = models.Model(input_audio, decoded)
+    autoencoder = tf.keras.models.Model(input_audio, decoded)
     autoencoder.compile(optimizer='adam', loss='mse')
     return autoencoder
 
@@ -83,4 +82,4 @@ history = autoencoder.fit(noisy_train, clean_train,
                 validation_data=(noisy_val, clean_val))
 
 # Save the model
-autoencoder.save('audio_denoiser.h5')
+autoencoder.save('audio_denoiser.keras')

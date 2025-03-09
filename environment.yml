@@ -1,0 +1,18 @@
+name: denoiser
+channels:
+    - defaults
+    - conda-forge
+dependencies:
+    - python=3.10.11
+    - librosa
+    - matplotlib
+    - numpy
+    - pandas
+    - scikit-learn
+    - scipy
+    - tensorflow
+    - torchvision
+    - pip
+    - pip:
+        - torch
+        - soundfile

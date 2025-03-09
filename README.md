@@ -128,3 +128,12 @@ It might be beneficial to visualize the frequency content of the audio. This cou
 4.  **Repeat with a sample from "train-other-500":** Observe the differences in the spectrogram, particularly in the high-frequency regions.
 5.  **Add artificial noise:** Add chosen type of high-frequency noise to the clean sample, and generate a new spectrogram. This will be an example of the input to the autoencoder.
 6.  Display all three spectrograms side by side. This will give a good visual representation of the data that the autoencoder will be processing.
+
+
+## Stage 3: Creating and running the autoencoder:
+
+Creating the conda environment:
+
+`conda env create --file=environment.yml`
+
+`conda activate denoiser`
