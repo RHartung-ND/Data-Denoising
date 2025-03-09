@@ -10,18 +10,22 @@ input_dir_noisy = "sample_data/test-noisy" # Path to noisy audio directory
 epochs = 50
 batch_size = 32
 sampling_rate = 16000
-audio_duration = 1  # Seconds
-audio_length = sampling_rate * audio_duration
+audio_length = sampling_rate * 1
 
-# Function to load and preprocess audio data
-def load_and_preprocess_audio(file_path):
-    audio, _ = librosa.load(file_path, sr=sampling_rate, duration=audio_duration)
-    if len(audio) < audio_length:
-        audio = np.pad(audio, (0, audio_length - len(audio)))
-    elif len(audio) > audio_length:
-        audio = audio[:audio_length]
+# Function to load audio and create windows
+def load_and_window_audio(file_path):
 
-    return audio.astype(np.float32)
+    audio, _ = librosa.load(file_path, sr=sampling_rate)
+    audio = audio.astype(np.float32)
+
+    windows = []
+    for i in range(0, len(audio), audio_length):
+        window = audio[i:i + audio_length]
+        if len(window) < audio_length:
+            window = np.pad(window, (0, audio_length - len(window)))
+        windows.append(window)
+
+    return np.array(windows)
 
 # Function to load data from directories
 def load_data(clean_dir, noisy_dir):
@@ -39,10 +43,14 @@ def load_data(clean_dir, noisy_dir):
                     clean_audio_files.append(clean_file_path)
                     noisy_audio_files.append(noisy_file_path)
 
-    clean_data = np.array([load_and_preprocess_audio(f) for f in clean_audio_files])
-    noisy_data = np.array([load_and_preprocess_audio(f) for f in noisy_audio_files])
+    clean_windows = []
+    noisy_windows = []
 
-    return clean_data, noisy_data
+    for clean_file, noisy_file in zip(clean_audio_files, noisy_audio_files):
+        clean_windows.extend(load_and_window_audio(clean_file))
+        noisy_windows.extend(load_and_window_audio(noisy_file))
+
+    return np.array(clean_windows), np.array(noisy_windows)
 
 # Load data
 clean_data, noisy_data = load_data(input_dir_clean, input_dir_noisy)

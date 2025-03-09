@@ -1,8 +1,11 @@
 import os
 import librosa
 import numpy as np
+import scipy.signal
 import tensorflow as tf
 import soundfile as sf
+import scipy
+# from scipy.signal import hann
 
 # Parameters
 input_dir_noisy = "sample_data/test-noisy"  # Path to noisy audio directory
@@ -11,27 +14,36 @@ model_path = "audio_denoiser.keras"  # Path to your trained autoencoder model
 sampling_rate = 16000
 audio_duration = 1  # Seconds
 audio_length = sampling_rate * audio_duration
+overlap = 0.5  # 50% overlap
 
-# Function to load and preprocess audio data
-def load_and_preprocess_audio(file_path):
-    audio, _ = librosa.load(file_path, sr=sampling_rate, duration=audio_duration)
-    if len(audio) < audio_length:
-        audio = np.pad(audio, (0, audio_length - len(audio)))
-    elif len(audio) > audio_length:
-        audio = audio[:audio_length]
-    return audio.astype(np.float32)
-
-# Function to denoise and save audio
 def denoise_and_save_audio(model, input_file, output_file):
     try:
-        noisy_audio = load_and_preprocess_audio(input_file)
-        noisy_audio = (noisy_audio - np.mean(noisy_audio)) / np.std(noisy_audio) #Normalize the input in the same way the model was trained.
-        noisy_audio = np.expand_dims(noisy_audio, axis=0)  # Add batch dimension
+        noisy_audio, sr = librosa.load(input_file, sr=sampling_rate)
+        noisy_audio = noisy_audio.astype(np.float32)
 
-        denoised_audio = model.predict(noisy_audio)
-        denoised_audio = denoised_audio.squeeze() #Remove batch dimension.
+        # Normalize the entire audio
+        noisy_audio = (noisy_audio - np.mean(noisy_audio)) / np.std(noisy_audio)
 
-        #Reverse normalization
+        hop_length = int(audio_length * (1 - overlap))
+        window = scipy.signal.windows.hann(audio_length)
+        windowed_audio = []
+        for i in range(0, len(noisy_audio) - audio_length, hop_length):
+            segment = noisy_audio[i:i + audio_length] * window
+            #Local Normalization
+            segment = (segment - np.mean(segment))/ np.std(segment)
+            windowed_audio.append(segment)
+        windowed_audio = np.array(windowed_audio)
+
+        # Denoise
+        denoised_windowed_audio = model.predict(windowed_audio)
+
+        # Overlap-Add Recombination
+        denoised_audio = np.zeros(len(noisy_audio))
+        for i, segment in enumerate(denoised_windowed_audio):
+            start = i * hop_length
+            denoised_audio[start:start + audio_length] += segment * window
+
+        # Reverse normalization (global)
         denoised_audio = (denoised_audio * np.std(denoised_audio)) + np.mean(denoised_audio)
 
         # Clip the audio to avoid distortion
