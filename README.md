@@ -130,9 +130,77 @@ It might be beneficial to visualize the frequency content of the audio. This cou
 6.  Display all three spectrograms side by side. This will give a good visual representation of the data that the autoencoder will be processing.
 
 
-## Stage 3: Creating and running the autoencoder:
+## Stage 3: First Update:
 
-Creating the conda environment:
+
+To simulate real-world scenarios, a Python script (`add_noise.py`) was developed to add artificial high-frequency noise to the clean audio files. This script generated random noise, filtered it to a specified frequency range (e.g., 4000-8000 Hz), and added it to the clean audio samples. This resulted in a parallel dataset of noisy audio files, which served as the input for the autoencoder.
+
+A crucial aspect of preprocessing involved windowing. Given that the autoencoder was trained on fixed-length audio segments (1 second), a sliding window approach was implemented. This allowed the processing of audio files of arbitrary length. Overlapping windows with a Hann window function were used to minimize phase discontinuities during recombination. Additionally, normalization was performed on the entire audio file before windowing, ensuring consistency across segments.
+
+**Autoencoder Architecture and Training:**
+
+The autoencoder was implemented using TensorFlow and Keras. The model consisted of a dense encoder with three layers (1024, 512, 256 neurons) and a corresponding dense decoder. The model was trained using a custom weighted Mean Squared Error (MSE) loss function, which prioritized errors in quieter sections of the audio. This was achieved by creating a custom Keras Layer that calculated the weighted MSE. Data augmentation was also implemented, scaling down audio samples to create quiet samples, thus helping the model to better handle quiet speech.
+
+The training process involved splitting the data into training and validation sets. The autoencoder was trained for a specified number of epochs, with the validation set used to monitor performance and prevent overfitting.
+
+**Denoising (Decoding):**
+
+A separate Python script (`decoder.py`) was developed to denoise noisy audio files using the trained autoencoder. This script loaded the trained model, preprocessed the noisy audio using the same windowing and normalization techniques as during training, and passed the processed audio through the autoencoder. The denoised audio segments were then recombined using overlap-add, and saved as FLAC files.
+
+**Results and Observations:**
+
+The results obtained so far are promising, demonstrating the feasibility of using a self-supervised autoencoder for high-frequency noise removal. The denoised audio exhibits a noticeable reduction in high-frequency noise, leading to improved clarity. However, further tuning is required to enhance the quality of the denoised audio, especially for quieter speakers.
+
+Specifically, the autoencoder appears to struggle with very quiet speech segments, sometimes cutting them out or introducing artifacts. This is likely due to the global normalization and the model's sensitivity to amplitude differences. The use of a weighted MSE loss and data augmentation has helped to mitigate this issue, but further improvements are needed.
+
+The overlapping window technique with the Hann window has significantly reduced the artifacts associated with segment recombination, minimizing phase discontinuities. However, some residual artifacts are still present, indicating the need for further refinements.
+
+**Technical Challenges and Refinements:**
+
+Throughout the project, several technical challenges were encountered and addressed. One significant hurdle was the handling of variable-length audio files. The initial approach of truncating or padding audio to a fixed length proved inadequate, leading to information loss and poor denoising quality. The implementation of a sliding window approach, with overlapping windows and Hann windowing, effectively resolved this issue. However, the choice of window size and overlap percentage required careful experimentation to balance denoising performance and computational efficiency.
+
+The selection and implementation of the loss function also played a crucial role. The initial MSE loss function, while effective for general reconstruction, did not adequately address the issue of quiet speech segments. The development of a custom weighted MSE loss function, which prioritized errors in quieter sections, significantly improved the model's ability to handle low-amplitude signals. However, further exploration of alternative loss functions, such as log-magnitude loss or perceptual loss functions, could potentially yield even better results.
+
+The model architecture itself presented another area for refinement. The current dense autoencoder, while functional, might not be optimal for capturing the temporal dependencies and spectral characteristics of audio signals. Exploring convolutional neural networks (CNNs) or recurrent neural networks (RNNs) could lead to improved denoising performance. CNNs, with their ability to learn local features and spatial hierarchies, are particularly well-suited for processing spectrogram representations of audio. RNNs, with their memory capabilities, are effective at capturing temporal dependencies in sequential data. Attention mechanisms could also be incorporated to allow the model to focus on specific regions of the audio signal, particularly those containing noise or quiet speech.
+
+
+**Next Steps:**
+
+The next crucial step is to train the autoencoder on the full LibriSpeech dataset, rather than the significantly reduced subset of data in `test-clean`. This will provide the model with a more diverse training set, leading to improved generalization and robustness.
+
+Further tuning of the model architecture, loss function, and training parameters is also necessary. This includes experimenting with different network architectures (e.g., convolutional or recurrent layers), exploring alternative loss functions (e.g., log-magnitude loss), and adjusting the learning rate and other hyperparameters.
+
+Additionally, a more comprehensive evaluation of the denoised audio is needed, including objective metrics (e.g., Signal-to-Noise Ratio (SNR), Perceptual Evaluation of Speech Quality (PESQ)) and subjective listening tests. This will provide a more accurate assessment of the model's performance and guide further improvements.
+
+**Context and Broader Implications:**
+
+Audio denoising is a critical preprocessing step for ASR systems, especially in noisy environments. By improving the signal-to-noise ratio (SNR) of audio recordings, denoising can enhance the accuracy and robustness of ASR, leading to better speech recognition performance. This has significant implications for various applications, including voice assistants, transcription services, and telecommunications.
+
+The development of a self-supervised autoencoder for audio denoising offers several advantages. Self-supervised learning eliminates the need for paired clean and noisy audio data, which can be difficult and expensive to obtain. Instead, the autoencoder learns to denoise by reconstructing clean audio from noisy inputs. This makes it a highly adaptable and scalable approach.
+
+Furthermore, the use of deep learning techniques, such as autoencoders, allows for the development of highly effective denoising models that can learn complex patterns and adapt to diverse noise conditions. This contrasts with traditional signal processing techniques, which often rely on handcrafted features and assumptions about the noise characteristics.
+
+The LibriSpeech dataset, used in this project, is a widely recognized and valuable resource for ASR research. By training and evaluating the autoencoder on this dataset, the project contributes to the broader research community and provides a benchmark for future work in audio denoising.
+
+**Potential Future Directions:**
+
+Beyond training on the full LibriSpeech dataset and refining the model architecture, several other avenues for future research exist. One potential direction is to explore the use of generative adversarial networks (GANs) for audio denoising. GANs have demonstrated impressive results in image denoising and could potentially be adapted to audio denoising. Another direction is to investigate the use of unsupervised domain adaptation techniques to improve the model's performance on unseen noise conditions.
+
+Additionally, exploring the integration of the denoising autoencoder with an ASR system could provide valuable insights into the impact of denoising on ASR performance. This would involve training an ASR model on the denoised audio and comparing its performance to an ASR model trained on the original noisy audio.
+
+Finally, exploring real-time denoising applications could expand the project's practical impact. This would involve optimizing the autoencoder for low-latency processing and deploying it on embedded devices or cloud platforms.
+
+**Code Organization and Environment:**
+
+The project code is organized into three main Python files:
+
+1.  **`add_noise.py`:** Generates artificial high-frequency noise and adds it to clean audio files.
+2.  **`autoencoder.py`:** Implements the autoencoder architecture, training process, and custom loss function.
+3.  **`decoder.py`:** Denoises noisy audio files using the trained autoencoder.
+
+To ensure reproducibility, a Conda environment file (`environment.yml`) has been created. This file specifies the required dependencies and their versions, allowing others to easily set up the project environment.
+
+### Instructions on how to setup conda environment:
 
 `conda env create --file=environment.yml`
 
