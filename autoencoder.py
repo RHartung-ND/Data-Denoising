@@ -2,6 +2,7 @@ import os
 import librosa
 import numpy as np
 import tensorflow as tf
+import random
 from sklearn.model_selection import train_test_split
 
 # Parameters
@@ -12,9 +13,18 @@ batch_size = 32
 sampling_rate = 16000
 audio_length = sampling_rate * 1
 
-# Function to load audio and create windows
-def load_and_window_audio(file_path):
+class WeightedMSELossLayer(tf.keras.layers.Layer):
+    def __init__(self, **kwargs):
+        super(WeightedMSELossLayer, self).__init__(**kwargs)
 
+    def call(self, inputs):
+        y_true, y_pred, input_audio = inputs
+        mse = tf.keras.losses.MSE(y_true, y_pred)
+        weights = 1.0 / (tf.reduce_mean(tf.abs(input_audio), axis=-1) + 1e-6)
+        weighted_mse = mse * weights
+        return tf.reduce_mean(weighted_mse)
+
+def load_and_window_audio(file_path, augment=False):
     audio, _ = librosa.load(file_path, sr=sampling_rate)
     audio = audio.astype(np.float32)
 
@@ -23,6 +33,10 @@ def load_and_window_audio(file_path):
         window = audio[i:i + audio_length]
         if len(window) < audio_length:
             window = np.pad(window, (0, audio_length - len(window)))
+        if augment:
+            scale_factor = random.uniform(0.1, 1.0) #Create quiet audio.
+            window = window * scale_factor
+
         windows.append(window)
 
     return np.array(windows)
@@ -47,8 +61,8 @@ def load_data(clean_dir, noisy_dir):
     noisy_windows = []
 
     for clean_file, noisy_file in zip(clean_audio_files, noisy_audio_files):
-        clean_windows.extend(load_and_window_audio(clean_file))
-        noisy_windows.extend(load_and_window_audio(noisy_file))
+        clean_windows.extend(load_and_window_audio(clean_file, augment=True)) #Add augmentation to clean.
+        noisy_windows.extend(load_and_window_audio(noisy_file, augment=True)) #Add augmentation to noisy.
 
     return np.array(clean_windows), np.array(noisy_windows)
 
@@ -76,7 +90,12 @@ def create_autoencoder():
     decoded = tf.keras.layers.Dense(audio_length, activation='linear')(decoded)
 
     autoencoder = tf.keras.models.Model(input_audio, decoded)
-    autoencoder.compile(optimizer='adam', loss='mse')
+
+    # Add the custom loss layer
+    loss_layer = WeightedMSELossLayer()
+    autoencoder.add_loss(loss_layer([input_audio, decoded, input_audio]))
+
+    autoencoder.compile(optimizer='adam')
     return autoencoder
 
 # Create and train the autoencoder
