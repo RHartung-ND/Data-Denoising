@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 ENCODER_PATH = "./encoder.pth"
 DECODER_PATH = "./decoder.pth"
 INPUT_DIR = "./output/spectrographs/train-noisy"
-OUTPUT_DIR = "./output/spectrographs/denoised"
+OUTPUT_DIR = "./output/spectrographs/denoised_picture"
 IMG_SIZE = (128, 128)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
