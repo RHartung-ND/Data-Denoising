@@ -205,3 +205,69 @@ To ensure reproducibility, a Conda environment file (`environment.yml`) has been
 `conda env create --file=environment.yml`
 
 `conda activate denoiser`
+
+
+
+## Stage 4: Second Update:
+
+There are two different methods to test and run the program. The first method is to traing an autoencoder on just the audio. The second method is to first convert the audio to a spectrogram and then train the model off of that. Here is how to run both versions:
+
+
+### Getting packages ready
+
+1. Make sure that you have Miniconda installed on you computer.
+
+2. Run the following command to generate the conda environment `conda env create --file==environment.yml`
+
+3. Run `conda activate denoiser`
+
+### Running the Program.
+
+Run the `spectrogram_method.sh` file. This should output the audio files to `output/spectrographs/temp`. Unfortunately, they aren't great right now. It needs some more fine-tuning and tweaking.
+
+The audio method somehow got broken in between this update and the previous one, so I need to figure out why it's broken and fix it.
+
+### Update on accuracy and training
+
+**Audio Waveform Training:**
+
+The autoencoder, trained directly on the audio waveform data (both clean and artificially noisy), can paritally reduce the random high-frequency noise. The overlapping windowing and Hann window application have effectively mitigated the artifacts associated with segment recombination, leading to a smoother and more coherent output. Furthermore, the implementation of a weighted Mean Squared Error (MSE) loss, prioritizing quieter sections, has shown some success in preserving the integrity of low-amplitude speech.
+
+However, the model still struggles with the complete removal of all instances of random noise. Sporadic bursts or persistent low-level high-frequency noise can still be present in the denoised audio. This suggests that the model, in its current architecture and training configuration, might not be fully capturing the subtle characteristics of the noise or effectively disentangling it from the underlying speech signal in all scenarios. The noise and its interaction with the speech waveform might require a more sophisticated model or a different representation of the audio data.
+
+**Spectrogram-Based Approach:**
+
+To address the limitations of direct waveform training, an alternative method involving the conversion of audio files into spectrograms was explored. Spectrograms provide a visual representation of the frequency content of audio over time, potentially offering a more informative input for the denoising task, particularly for frequency-specific noise like the high-frequency noise targeted in this project.
+
+The initial implementation involved converting the audio files into spectrogram images and then training the autoencoder on these images. The autoencoder architecture was adapted to process image data, typically involving convolutional layers for feature extraction and upsampling layers for reconstruction.
+
+**Challenges with Spectrogram Compression:**
+
+The spectrogram-based approach, unfortunately, did not yield satisfactory results in its initial implementation. A significant challenge encountered was the heavy compression of the spectrogram data during the training process. This compression likely occurred due to the inherent dimensionality reduction within the autoencoder's latent space and the lossy nature of the image representation and processing.
+
+During the encoding phase, the spectrogram images were compressed into a lower-dimensional representation. While this is a standard mechanism in autoencoders for learning essential features, in this context, it appeared to discard crucial details necessary for accurate audio reconstruction. Consequently, when the compressed spectrogram was decoded back into an audio waveform, a significant loss of audio quality and fidelity was observed. The reconstructed audio often sounded muffled, distorted, or contained significant artifacts, failing to preserve the nuances of the original speech.
+
+This heavy compression suggests that the information required to accurately reconstruct the audio waveform from the compressed spectrogram representation was not being adequately retained during the encoding process. The image-based representation and the convolutional layers might be inadvertently discarding information vital for preserving the temporal and fine-grained spectral details necessary for high-quality audio synthesis.
+
+**Next Steps: Preserving Spectrogram Quality and Size:**
+
+Before the final update, the immediate next step is to investigate methods for preserving the quality and size of the spectrograms throughout the autoencoder training process. The goal is to retain sufficient information in the latent space and during the decoding phase to enable high-fidelity audio reconstruction from the denoised spectrogram.
+
+Several potential strategies will be explored:
+
+* **Higher Dimensional Latent Space:** Increasing the dimensionality of the autoencoder's latent space could allow for the retention of more information from the input spectrograms, potentially preserving crucial details for audio reconstruction.
+* **Loss Functions Optimized for Reconstruction:** Experimenting with loss functions specifically designed for image reconstruction or those that consider perceptual audio quality metrics might encourage the autoencoder to preserve more relevant information.
+* **Less Aggressive Downsampling:** If the autoencoder architecture involves downsampling layers that contribute to information loss, exploring architectures with less aggressive downsampling or alternative methods for dimensionality reduction might be beneficial.
+* **Preserving Phase Information:** Standard spectrograms typically represent only the magnitude of the audio signal, discarding phase information which is crucial for accurate audio reconstruction. Investigating methods to incorporate or predict phase information alongside the magnitude spectrogram could significantly improve audio quality. This might involve techniques like Phase Vocoder or specialized neural network architectures for phase estimation.
+* **Larger Spectrogram Resolution:** Training on spectrograms with higher temporal and frequency resolution could provide the model with more detailed information to learn from and reconstruct. However, this would also increase the computational cost.
+
+The success of the spectrogram-based approach hinges on the ability to overcome the information loss during the encoding and decoding stages. By focusing on preserving the quality and size of the spectrogram representation, the aim is to create a denoising pipeline that leverages the spectral information effectively while maintaining high audio fidelity upon reconstruction. The results of these investigations will inform the final update on the project's outcomes and the effectiveness of the chosen denoising methods.
+
+
+### Another AI Disclosure
+
+The initial groundwork for exploring the spectrogram-based audio denoising approach was aided by the utilization of Google Gemini and several online resources. Google Gemini was a useful tool for quickly creating the basic code for audio-to-spectrogram conversion. However, I did use several online tutorials and documentation to give me fundamental knowledge of spectrogram production parameters and best practices in image-based autoencoder design.
+
+I also used Google Gemini for tips and suggestions on improving the efficiency and effectiveness of the code, as well as for brainstorming potential strategies to enhance the training of the dataset.
+
+The core ideas, specific implementations, and analysis of the results are entirely the product of my own thought and experimentation. The AI served as a catalyst for initial exploration and a source of technical suggestions, but the intellectual ownership and the critical evaluation of the project are my own.

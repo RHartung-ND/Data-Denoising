@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 # === CONFIG ===
 ENCODER_PATH = "./encoder.pth"
 DECODER_PATH = "./decoder.pth"
-INPUT_DIR = "./output/spectrographs/train-noisy"
-OUTPUT_DIR = "./output/spectrographs/denoised_picture"
+INPUT_DIR = "output/spectrographs/train-noisy"
+OUTPUT_DIR = "output/spectrographs/denoised_picture"
 IMG_SIZE = (128, 128)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -63,7 +63,7 @@ def denoise_images():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     transform = transforms.Compose([
-        transforms.Resize(IMG_SIZE),
+        # transforms.Resize(IMG_SIZE),
         transforms.ToTensor(),
     ])
 

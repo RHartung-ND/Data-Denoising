@@ -5,11 +5,10 @@ import scipy.signal
 import tensorflow as tf
 import soundfile as sf
 import scipy
-# from scipy.signal import hann
 
 # Parameters
-input_dir_noisy = "sample_data/test-noisy"  # Path to noisy audio directory
-output_dir_denoised = "sample_data/test-cleaned"  # Path to save denoised audio
+input_dir_noisy = "../../sample_data/test-noisy"  # Path to noisy audio directory
+output_dir_denoised = "../../sample_data/test-cleaned"  # Path to save denoised audio
 model_path = "audio_denoiser.keras"  # Path to your trained autoencoder model
 sampling_rate = 16000
 audio_duration = 1  # Seconds

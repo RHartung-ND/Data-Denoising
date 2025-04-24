@@ -25,8 +25,8 @@ def generate_spectrogram(audio_path, output_path):
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    input_dir = "sample_data/train-clean"
-    output_dir = "output/spectrographs/train-clean"
+    input_dir = "sample_data/train-noisy"
+    output_dir = "output/spectrographs/train-noisy"
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)

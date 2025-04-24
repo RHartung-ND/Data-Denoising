@@ -84,8 +84,8 @@ def process_directory(input_dir, output_dir, noise_level=0.1, frequency_range=(4
                 add_high_frequency_noise(input_file, output_file, noise_level, frequency_range)
 
 if __name__ == "__main__":
-    input_directory = "sample_data/train-clean"  # Replace with your input directory
-    output_directory = "sample_data/train-noisy"  # Replace with your output directory
+    input_directory = "sample_data/train-clean"
+    output_directory = "sample_data/train-noisy"
     noise_strength = 0.05 # Adjust noise level
     frequency_band = (5000, 7500) # Adjust frequency band
 

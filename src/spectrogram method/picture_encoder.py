@@ -8,7 +8,7 @@ from PIL import Image
 from tqdm import tqdm
 
 # === CONFIG ===
-DATA_DIR = "./output/spectrographs/train-noisy"
+DATA_DIR = "output/spectrographs/train-noisy"
 IMG_SIZE = (128, 128)  # Resize all spectrograms to this size
 BATCH_SIZE = 32
 EPOCHS = 30
@@ -69,11 +69,10 @@ class ConvAutoencoder(nn.Module):
 def train():
     transform = transforms.Compose([
         transforms.Resize(IMG_SIZE),
-        transforms.ToTensor(),
+        transforms.ToTensor()
     ])
 
     dataset = SpectrogramDataset(DATA_DIR, transform)
-    # print(dataset.image_files)
     dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
     model = ConvAutoencoder().to(DEVICE)

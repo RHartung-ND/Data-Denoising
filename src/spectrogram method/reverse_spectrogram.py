@@ -1,6 +1,5 @@
 import librosa
 import os
-import librosa.display
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -25,8 +24,8 @@ def spectrogram_image_to_audio(png_path, output_wav_path, sr=22050):
     print(f"Saved reconstructed audio to {output_wav_path}")
 
 if __name__ == "__main__":
-    input_dir = "output/spectrographs/denoised_picture"
-    output_dir = "output/spectrographs/denoised_audio"
+    input_dir = "output/spectrographs/train-clean"
+    output_dir = "output/spectrographs/temp"
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
