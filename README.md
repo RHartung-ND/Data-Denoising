@@ -217,7 +217,7 @@ There are two different methods to test and run the program. The first method is
 
 1. Make sure that you have Miniconda installed on you computer.
 
-2. Run the following command to generate the conda environment `conda env create --file==environment.yml`
+2. Run the following command to generate the conda environment `conda env create --file environment.yml`
 
 3. Run `conda activate denoiser`
 
@@ -271,3 +271,39 @@ The initial groundwork for exploring the spectrogram-based audio denoising appro
 I also used Google Gemini for tips and suggestions on improving the efficiency and effectiveness of the code, as well as for brainstorming potential strategies to enhance the training of the dataset.
 
 The core ideas, specific implementations, and analysis of the results are entirely the product of my own thought and experimentation. The AI served as a catalyst for initial exploration and a source of technical suggestions, but the intellectual ownership and the critical evaluation of the project are my own.
+
+
+## Stage 5: Final Update:
+
+### Getting packages ready
+
+1. Make sure that you have Miniconda installed on you computer.
+
+2. Run the following command to generate the conda environment `conda env create --file environment.yml`
+
+conda env update --file environment.yml --prune
+
+3. Run `conda activate denoiser`
+
+### Running the Program.
+
+To get started, run `python src/add_noise.py`. This python script will go through the training data and randomly add white noise. 
+
+#### Spectrogram Method
+
+1. run `python "src/spectrogram method/create_spectrogram.py"` to generate spectrograms of the training data
+
+2. run `python "src/spectrogram method/picture_encoder.py"` to run the encoder on all of the training data
+
+3. run `python "src/spectrogram method/picture_decoder.py"` to run the decoder on all of the training data
+
+4. run `python "src/spectrogram method/reverse_spectrogram.py"` to convert the spectrogram files back into audio files
+
+This should output the audio files to `output/spectrographs/temp`. Unfortunately, they aren't great right now. It needs some more fine-tuning and tweaking.
+
+#### Audio Only Method
+
+
+#### Quick Method (only works/tested on Linux)
+
+If you want to run the various Python scripts quickly and are using Linux, then you can run the `src/scripts/automated.sh` file and choose either the spectrogram method or the audio only method by entering either "s" or "a". This script assumes that your Linux shell is using bash.
