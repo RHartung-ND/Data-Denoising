@@ -280,7 +280,6 @@ The core ideas, specific implementations, and analysis of the results are entire
 1. Make sure that you have Miniconda installed on you computer.
 
 2. Run the following command to generate the audio conda environment `conda env create --file audio_environment.yml`
-<!-- conda env update --file environment.yml --prune -->
 
 3. Run the following command to generate the spectrogram conda environment `conda env create --file spec_environment.yml`
 

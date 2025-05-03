@@ -19,8 +19,6 @@ case "$choice" in
 
         conda activate audio_denoiser
 
-        pip install 'tensorflow[and-cuda]'
-
         python "src/add_noise.py"
 
         python "src/audio method/autoencoder.py"
