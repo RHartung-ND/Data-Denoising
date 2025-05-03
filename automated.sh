@@ -36,7 +36,7 @@ case "$choice" in
             conda env create --file=spec_environment.yml
         fi
 
-        conda activate name: sepctrogram_denoiser
+        conda activate sepctrogram_denoiser
 
         python "src/add_noise.py"
 

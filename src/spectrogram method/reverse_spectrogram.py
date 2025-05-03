@@ -1,7 +1,6 @@
 import librosa
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 from PIL import Image
 import soundfile as sf
 
@@ -24,9 +23,34 @@ def spectrogram_image_to_audio(png_path, output_wav_path, sr=22050):
     print(f"Saved reconstructed audio to {output_wav_path}")
 
 if __name__ == "__main__":
-    input_dir = "output/spectrographs/train-clean"
-    output_dir = "output/spectrographs/temp"
+    input_dir = None
+    output_dir = None
 
+
+try:
+    with open("src/config.txt", "r") as config:
+        print("----------------------------------------------------------------")
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        # -------------------------------------------------
+        line = config.readline() # input_dir_clean
+        line = config.readline() # noisy_dir
+        args = line.strip().split("=")
+        if len(args) > 1:
+            input_dir = str(args[1].strip())
+            print(f"Using the following training directory: {input_dir}")
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        args = line.strip().split("=")
+        if len(args) > 1:
+            output_dir = str(args[1].strip())
+            print(f"Using the following training directory: {output_dir}")
+        print("----------------------------------------------------------------")
+except TypeError:
+    print("Please use correct data paths or epoch numbers")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     for root, _, files in os.walk(input_dir):

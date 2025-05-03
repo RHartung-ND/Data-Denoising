@@ -1,4 +1,9 @@
-input_dir_clean     = sample_data/train-clean
-noisy_dir           = sample_data/train-noisy
-output_dir_denoised = output/train-cleaned
-epochs              = 50
+input_dir_clean       = sample_data/train-clean
+noisy_dir             = sample_data/train-noisy
+output_dir_denoised   = output/train-cleaned
+epochs                = 50
+-------------------------------------------------
+input_dir_clean       = sample_data/train-clean
+noisy_dir             = output/spectrogram/train-noisy
+output_pic_denoised   = output/spectrogram/denoised_picture
+output_audio_denoised = output/spectrogram/audio

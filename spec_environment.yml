@@ -5,9 +5,11 @@ dependencies:
     - python=3.10
     - pip
     - pip:
-        - tensorflow
-        - numpy
         - librosa
+        - matplotlib
+        - numpy
         - soundfile
         - torch
-        - scikit-learn
+        - torchvision
+        - Pillow
+        - tqdm

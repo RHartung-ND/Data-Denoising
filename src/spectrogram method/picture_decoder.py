@@ -6,15 +6,38 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import matplotlib.pyplot as plt
 
-# === CONFIG ===
 ENCODER_PATH = "./encoder.pth"
 DECODER_PATH = "./decoder.pth"
-INPUT_DIR = "output/spectrographs/train-noisy"
-OUTPUT_DIR = "output/spectrographs/denoised_picture"
+INPUT_DIR = None
+OUTPUT_DIR = None
 IMG_SIZE = (128, 128)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# === DATASET ===
+try:
+    with open("src/config.txt", "r") as config:
+        print("----------------------------------------------------------------")
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        # -------------------------------------------------
+        line = config.readline() # input_dir_clean        
+        line = config.readline() # noisy_dir
+        args = line.strip().split("=")
+        if len(args) > 1:
+            INPUT_DIR = str(args[1].strip())
+            print(f"Using the following training directory: {INPUT_DIR}")
+
+        line = config.readline() # output
+        args = line.strip().split("=")
+        if len(args) > 1:
+            OUTPUT_DIR = str(args[1].strip())
+            print(f"Using the following training directory: {OUTPUT_DIR}")
+        print("----------------------------------------------------------------")
+except TypeError:
+    print("Please use correct data paths or epoch numbers")
+
 class SpectrogramDataset(Dataset):
     def __init__(self, folder_path, transform=None):
         self.folder_path = folder_path
@@ -36,7 +59,6 @@ class SpectrogramDataset(Dataset):
             image = self.transform(image)
         return image, self.image_files[idx]
 
-# === MODELS ===
 def get_encoder():
     return nn.Sequential(
         nn.Conv2d(1, 16, 3, stride=2, padding=1),
@@ -58,7 +80,6 @@ def get_decoder():
     )
 
 
-# === MAIN ===
 def denoise_images():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 

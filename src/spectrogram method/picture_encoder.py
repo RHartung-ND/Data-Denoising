@@ -7,15 +7,33 @@ from torchvision import transforms
 from PIL import Image
 from tqdm import tqdm
 
-# === CONFIG ===
-DATA_DIR = "output/spectrographs/train-noisy"
+DATA_DIR = None
 IMG_SIZE = (128, 128)  # Resize all spectrograms to this size
 BATCH_SIZE = 32
 EPOCHS = 30
 LEARNING_RATE = 1e-3
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# === CUSTOM DATASET ===
+
+try:
+    with open("src/config.txt", "r") as config:
+        print("----------------------------------------------------------------")
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        line = config.readline() # input_dir_clean
+        # -------------------------------------------------
+        line = config.readline() # input_dir_clean        
+        line = config.readline() # noisy_dir
+        args = line.strip().split("=")
+        if len(args) > 1:
+            DATA_DIR = str(args[1].strip())
+            print(f"Using the following training directory: {DATA_DIR}")
+        print("----------------------------------------------------------------")
+except TypeError:
+    print("Please use correct data paths or epoch numbers")
+
 class SpectrogramDataset(Dataset):
     def __init__(self, folder_path, transform=None):
         self.folder_path = folder_path
@@ -37,7 +55,6 @@ class SpectrogramDataset(Dataset):
             image = self.transform(image)
         return image
 
-# === AUTOENCODER ===
 class ConvAutoencoder(nn.Module):
     def __init__(self):
         super(ConvAutoencoder, self).__init__()
@@ -65,7 +82,6 @@ class ConvAutoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
-# === MAIN TRAINING FUNCTION ===
 def train():
     transform = transforms.Compose([
         transforms.Resize(IMG_SIZE),
