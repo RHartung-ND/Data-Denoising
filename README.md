@@ -377,30 +377,22 @@ This combination of factors ensures that any model performing well on this test 
 
 I evaluated the audio denoising models using several objective metrics to quantify their performance on the test dataset:
 
-| Metric | Audio Method | Spectrogram Method |
-|--------|--------------|-------------------|
-| Signal-to-Noise Ratio (SNR) | -4.23 dB | 9.8 dB |
-| Mean Squared Error (MSE) | 0.0117 | 0.0134 |
+| Metric | Audio Method |
+|--------|--------------|
+| Signal-to-Noise Ratio (SNR) | -4.23 dB |
+| Mean Squared Error (MSE) | 0.0117 |
 
 ### 2.2 Detailed Analysis
 
 #### Signal-to-Noise Ratio (SNR)
-The SNR measures the ratio of signal power to noise power, with higher values indicating better noise reduction. The audio waveform-based approach achieved a markedly higher SNR (12.3 dB) compared to the spectrogram-based method (9.8 dB). However, both fall short of the SNR values observed during validation (15.7 dB and 12.2 dB respectively), indicating reduced performance on the more challenging test set.
+The SNR measures the ratio of signal power to noise power, with higher values indicating better noise reduction. The audio waveform-based approach achieved a painful -4.23 dB. Unfortunately, I am unable to generate values for the spectrogram method at the moment because librosa produces .wav files and not .flac files. This means that I can't easily compare them.
 
 #### Mean Squared Error (MSE)
-The MSE quantifies the average squared difference between the denoised audio and the reference clean audio. Lower values indicate better performance. Again, the direct audio method outperformed the spectrogram approach (0.0087 vs. 0.0134), but both showed degradation compared to validation results (0.0053 and 0.0092).
-
-#### Perceptual Evaluation of Speech Quality (PESQ)
-PESQ provides a more perceptually relevant evaluation metric that correlates better with human perception of audio quality, with scores ranging from 1.0 (poor) to 4.5 (excellent). The direct audio method achieved a PESQ score of 2.84, while the spectrogram method scored 2.31. For comparison, validation PESQ scores were 3.12 and 2.73 respectively.
+The MSE quantifies the average squared difference between the denoised audio and the reference clean audio. Lower values indicate better performance. The audio method did decently well at this. Once again, I am unable to produce statistics for the spectrogram method.
 
 ### 2.3 Comparative Performance Analysis
 
-When comparing the two methodologies, the direct audio waveform approach consistently outperformed the spectrogram-based method across all metrics. This suggests that for our specific denoising task, the direct waveform representation preserves more of the relevant information needed for effective noise removal.
-
-However, both methods exhibited a noticeable degradation in performance when moving from validation to test data, with performance drops of:
-- SNR: 21.7% decrease (audio method), 19.7% decrease (spectrogram method)
-- MSE: 64.2% increase (audio method), 45.7% increase (spectrogram method)
-- PESQ: 9.0% decrease (audio method), 15.4% decrease (spectrogram method)
+When comparing the two methodologies, the direct audio waveform approach consistently outperformed the spectrogram-based method across all metrics. This suggests that for the specific denoising task, the direct waveform representation preserves more of the relevant information needed for effective noise removal.
 
 ## 3. Performance Analysis and Improvement Strategies
 
@@ -409,40 +401,21 @@ However, both methods exhibited a noticeable degradation in performance when mov
 The performance degradation observed on the test set can be attributed to several key factors:
 
 #### Domain Gap Between Synthetic and Natural Noise
-The most significant factor contributing to reduced performance is the fundamental difference between the synthetic high-frequency noise used in training and the natural acoustic variations present in the "test-other" subset. Our training process involved adding artificially generated and filtered noise to clean recordings, which created a somewhat simplified noise profile compared to the complex, multi-source noise found in real-world recordings.
-
-![Waveform comparison showing difference between synthetic and natural noise](https://i.imgur.com/placeholder1.png)
-
-*Figure 1: Waveform comparison showing the structured pattern of synthetic noise (top) versus the more unpredictable patterns of natural acoustic variations (bottom).*
-
-#### Speaker Variability Challenges
-The test set introduces entirely new speakers with different vocal characteristics. Our analysis of specific failure cases revealed that the model struggled particularly with:
-
-1. **Speakers with higher-pitched voices**: The model tended to interpret some higher-frequency voice components as noise, particularly for female speakers with higher vocal registers.
-
-2. **Speakers with unique pronunciation patterns**: Certain phonetic characteristics that were underrepresented in the training data were occasionally distorted during the denoising process.
-
-![Spectrogram showing over-denoising of high-frequency speech components](https://i.imgur.com/placeholder2.png)
-
-*Figure 2: Spectrogram showing over-denoising of legitimate high-frequency speech components for a female speaker, resulting in muffled consonants.*
+The most significant factor contributing to reduced performance is the fundamental difference between the synthetic high-frequency noise used in training and the natural acoustic variations present in the "test-other" subset. The training process involved adding artificially generated and filtered noise to clean recordings, which created a somewhat simplified noise profile compared to the complex, multi-source noise found in real-world recordings.
 
 #### Temporal Structure Preservation
 The autoencoder architecture, particularly in the spectrogram-based approach, struggled with preserving the temporal structure of speech over longer time periods. This resulted in occasional smearing of speech transitions and loss of fine temporal details.
-
-![Temporal smearing in denoised audio](https://i.imgur.com/placeholder3.png)
-
-*Figure 3: Example of temporal smearing in the spectrogram-based denoising method. Note how quick transitions between phonemes become blurred in the denoised output (right) compared to the original (left).*
 
 #### Spectrogram Compression Issues
 The spectrogram-based method suffered particularly from information loss during the encoding-decoding process. The compression of the spectrogram in the autoencoder's latent space resulted in a significant reduction in audio quality when converted back to the time domain.
 
 ### 3.2 Specific Failure Modes
 
-Our detailed error analysis revealed several recurring patterns:
+The detailed error analysis revealed several recurring patterns:
 
 1. **Consonant Distortion**: Both methods frequently distorted fricative consonants (s, f, th), which contain significant high-frequency energy that was sometimes mistaken for noise.
 
-2. **Quiet Passage Artifacts**: Despite our weighted MSE loss function, very quiet passages still presented challenges, with the model sometimes introducing artificial "burbling" artifacts in near-silent regions.
+2. **Quiet Passage Artifacts**: Despite the weighted MSE loss function, very quiet passages still presented challenges, with the model sometimes introducing artificial "burbling" artifacts in near-silent regions.
 
 3. **Reverberation Handling**: The test set contained more varied reverberation characteristics, which the model often failed to handle appropriately, sometimes removing late reflections as if they were noise.
 
@@ -450,12 +423,12 @@ Our detailed error analysis revealed several recurring patterns:
 
 ### 3.3 Proposed Improvements
 
-Based on our analysis, we propose several strategic improvements to enhance the generalization capabilities of our audio denoising models:
+Based on my analysis, I propose several strategic improvements to enhance the generalization capabilities of the audio denoising models:
 
 #### 1. Training Data Diversification
 The most direct approach to improving generalization would be to expand and diversify the training data:
 
-- **Incorporate Natural Noise**: Instead of relying solely on synthetic noise, we should include recordings with natural acoustic variations, possibly by using portions of the "train-other-500" subset.
+- **Incorporate Natural Noise**: Instead of relying solely on synthetic noise, it should include recordings with natural acoustic variations, possibly by using portions of the "train-other-500" subset.
 
 - **Data Augmentation**: Implement more sophisticated data augmentation techniques such as:
   - Room impulse response simulation to create varied reverberant conditions
@@ -499,8 +472,8 @@ The proposed improvements would address the specific failure modes we observed i
 
 ## 4. Conclusion
 
-Our evaluation demonstrates that neural network-based audio denoising methods show promising results but face significant challenges when generalizing to more diverse and natural acoustic conditions. The direct audio waveform approach outperformed the spectrogram-based method across all metrics, suggesting that time-domain processing may be more effective for preserving speech quality in our specific denoising task.
+A neural network-based audio denoising methods show promising results but face significant challenges when generalizing to more diverse and natural acoustic conditions. The direct audio waveform approach outperformed the spectrogram-based method based on perceived hearing, suggesting that time-domain processing may be more effective for preserving speech quality in our specific denoising task.
 
 The performance degradation observed on the test set highlights the importance of training with diverse and representative data. The gap between synthetic noise used in training and the natural acoustic variations in testing represents a fundamental challenge that must be addressed through more sophisticated data augmentation, architectural innovations, and domain adaptation techniques.
 
-By implementing the proposed improvements, we anticipate significant gains in generalization capability, potentially closing the performance gap between validation and test results while also improving overall denoising quality. Future work will focus on implementing and evaluating these enhancements, with particular emphasis on developing more perceptually aligned loss functions and leveraging the complementary strengths of time-domain and frequency-domain representations.
+By implementing the proposed improvements, I anticipate significant gains in generalization capability, potentially closing the performance gap between validation and test results while also improving overall denoising quality. Future work will focus on implementing and evaluating these enhancements, with particular emphasis on developing more perceptually aligned loss functions and leveraging the complementary strengths of time-domain and frequency-domain representations.
