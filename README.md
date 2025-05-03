@@ -407,7 +407,10 @@ The most significant factor contributing to reduced performance is the fundament
 The autoencoder architecture, particularly in the spectrogram-based approach, struggled with preserving the temporal structure of speech over longer time periods. This resulted in occasional smearing of speech transitions and loss of fine temporal details.
 
 #### Spectrogram Compression Issues
-The spectrogram-based method suffered particularly from information loss during the encoding-decoding process. The compression of the spectrogram in the autoencoder's latent space resulted in a significant reduction in audio quality when converted back to the time domain.
+The spectrogram-based method suffered particularly from information loss during the encoding-decoding process. The compression of the spectrogram in the autoencoder's latent space resulted in a significant reduction in audio quality when converted back to the time domain (as seen below).
+
+![Original waveform with added random noise](figures/229-130880-0000(orig).png)
+![Same waveform after being denoised](figures/229-130880-0000(denoised).png)
 
 ### 3.2 Specific Failure Modes
 
