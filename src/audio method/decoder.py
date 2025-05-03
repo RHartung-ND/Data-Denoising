@@ -5,15 +5,37 @@ import scipy.signal
 import tensorflow as tf
 import soundfile as sf
 import scipy
+from autoencoder import WeightedMSELossLayer
 
 # Parameters
-input_dir_noisy = "../../sample_data/test-noisy"  # Path to noisy audio directory
-output_dir_denoised = "../../sample_data/test-cleaned"  # Path to save denoised audio
-model_path = "audio_denoiser.keras"  # Path to your trained autoencoder model
+input_dir_noisy = "sample_data/test-noisy"  # Path to noisy audio directory
+output_dir_denoised = "output/test-cleaned"  # Path to saved denoised audio
+model_path = "src/audio method/audio_denoiser.keras"  # Path to trained autoencoder model
 sampling_rate = 16000
 audio_duration = 1  # Seconds
 audio_length = sampling_rate * audio_duration
 overlap = 0.5  # 50% overlap
+
+try:
+    with open("src/config.txt", "r") as config:
+        print("----------------------------------------------------------------")
+        line = config.readline()
+
+        line = config.readline()
+        args = line.strip().split("=")
+        if len(args) > 1:
+            input_dir_noisy = str(args[1].strip())
+            print(f"Using the following testing directory: {input_dir_noisy}")
+        
+        line = config.readline()
+        args = line.strip().split("=")
+        if len(args) > 1:
+            output_dir_denoised = str(args[1].strip())
+            print(f"Using the following training directory: {output_dir_denoised}")
+        print("----------------------------------------------------------------")
+except TypeError:
+    print("Please use correct data paths or epoch numbers")
+
 
 def denoise_and_save_audio(model, input_file, output_file):
     try:
@@ -53,6 +75,10 @@ def denoise_and_save_audio(model, input_file, output_file):
 
     except Exception as e:
         print(f"Error processing {input_file}: {e}")
+
+# Load the trained autoencoder model
+with tf.keras.utils.custom_object_scope({'WeightedMSELossLayer': WeightedMSELossLayer}):
+    autoencoder = tf.keras.models.load_model(model_path)
 
 # Load the trained autoencoder model
 autoencoder = tf.keras.models.load_model(model_path)

@@ -1,23 +1,13 @@
 name: denoiser
 channels:
     - conda-forge
-    - nvidia
 dependencies:
-    - python
-    - matplotlib
-    - numpy
-    - pandas
-    - scikit-learn
-    - scipy
-    - tensorflow=2.6
-    - torchvision
-    - tqdm
-    - Pillow
-    - tensorflow-gpu
-    - cudatoolkit
-    - cudnn=8.1
+    - python=3.10
     - pip
     - pip:
+        - tensorflow
+        - numpy
+        - librosa
         - soundfile
         - torch
-        - librosa
+        - scikit-learn

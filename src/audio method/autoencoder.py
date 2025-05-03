@@ -7,12 +7,40 @@ from sklearn.model_selection import train_test_split
 
 # Parameters
 input_dir_clean = "sample_data/test-clean"  # Path to clean audio directory
-input_dir_noisy = "sample_data/test-noisy" # Path to noisy audio directory
+input_dir_noisy = "sample_data/train-noisy"  # Path to noisy audio directory
 epochs = 50
 batch_size = 32
 sampling_rate = 16000
 audio_length = sampling_rate * 1
 
+
+try:
+    with open("src/config.txt", "r") as config:
+        print("----------------------------------------------------------------")
+        line = config.readline()
+        args = line.strip().split("=")
+        if len(args) > 1:
+            input_dir_clean = str(args[1].strip())
+            print(f"Using the following testing directory: {input_dir_clean}")
+        
+        line = config.readline()
+        args = line.strip().split("=")
+        if len(args) > 1:
+            input_dir_noisy = str(args[1].strip())
+            print(f"Using the following training directory: {input_dir_noisy}")
+
+        line = config.readline()
+
+        line = config.readline()
+        args = line.strip().split("=")
+        if len(args) > 1:
+            epochs = int(args[1].strip())
+            print(f"Running for {epochs} epochs")
+        print("----------------------------------------------------------------")
+except TypeError:
+    print("Please use correct data paths or epoch numbers")
+
+@tf.keras.utils.register_keras_serializable()
 class WeightedMSELossLayer(tf.keras.layers.Layer):
     def __init__(self, **kwargs):
         super(WeightedMSELossLayer, self).__init__(**kwargs)
@@ -24,6 +52,14 @@ class WeightedMSELossLayer(tf.keras.layers.Layer):
         weighted_mse = mse * weights
         self.add_loss(tf.reduce_mean(weighted_mse))
         return y_pred
+    
+    def get_config(self):
+        config = super(WeightedMSELossLayer, self).get_config()
+        return config
+    
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
 
 def load_and_window_audio(file_path, augment=False):
     audio, _ = librosa.load(file_path, sr=sampling_rate)
@@ -109,4 +145,4 @@ history = autoencoder.fit(noisy_train, clean_train,
                 validation_data=(noisy_val, clean_val))
 
 # Save the model
-autoencoder.save('audio_denoiser.keras')
+autoencoder.save('src/audio method/audio_denoiser.keras')
