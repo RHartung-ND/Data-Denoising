@@ -6,8 +6,8 @@ import random
 from sklearn.model_selection import train_test_split
 
 # Parameters
-input_dir_clean = "sample_data/test-clean"  # Path to clean audio directory
-input_dir_noisy = "sample_data/train-noisy"  # Path to noisy audio directory
+input_dir_clean = None  # Path to clean audio directory
+input_dir_noisy = None  # Path to noisy audio directory
 epochs = 50
 batch_size = 32
 sampling_rate = 16000
@@ -17,21 +17,21 @@ audio_length = sampling_rate * 1
 try:
     with open("src/config.txt", "r") as config:
         print("----------------------------------------------------------------")
-        line = config.readline()
+        line = config.readline() # input_dir_clean
         args = line.strip().split("=")
         if len(args) > 1:
             input_dir_clean = str(args[1].strip())
             print(f"Using the following testing directory: {input_dir_clean}")
-        
-        line = config.readline()
+
+        line = config.readline() # noisy_dir
         args = line.strip().split("=")
         if len(args) > 1:
             input_dir_noisy = str(args[1].strip())
             print(f"Using the following training directory: {input_dir_noisy}")
 
-        line = config.readline()
+        line = config.readline() # output_dir_denoised
 
-        line = config.readline()
+        line = config.readline() # epochs
         args = line.strip().split("=")
         if len(args) > 1:
             epochs = int(args[1].strip())

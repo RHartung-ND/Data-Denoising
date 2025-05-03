@@ -8,8 +8,8 @@ import scipy
 from autoencoder import WeightedMSELossLayer
 
 # Parameters
-input_dir_noisy = "sample_data/test-noisy"  # Path to noisy audio directory
-output_dir_denoised = "output/test-cleaned"  # Path to saved denoised audio
+input_dir_noisy = None  # Path to noisy audio directory
+output_dir_denoised = None  # Path to saved denoised audio
 model_path = "src/audio method/audio_denoiser.keras"  # Path to trained autoencoder model
 sampling_rate = 16000
 audio_duration = 1  # Seconds
@@ -19,19 +19,21 @@ overlap = 0.5  # 50% overlap
 try:
     with open("src/config.txt", "r") as config:
         print("----------------------------------------------------------------")
-        line = config.readline()
+        line = config.readline() # input_dir_clean
 
-        line = config.readline()
+        line = config.readline() # noisy_dir
         args = line.strip().split("=")
         if len(args) > 1:
             input_dir_noisy = str(args[1].strip())
-            print(f"Using the following testing directory: {input_dir_noisy}")
+            print(f"Using the following noisy directory: {input_dir_noisy}")
         
-        line = config.readline()
+        line = config.readline() # testing_dir
+
+        line = config.readline() # output_dir_denoised
         args = line.strip().split("=")
         if len(args) > 1:
             output_dir_denoised = str(args[1].strip())
-            print(f"Using the following training directory: {output_dir_denoised}")
+            print(f"Output to the denoised directory: {output_dir_denoised}")
         print("----------------------------------------------------------------")
 except TypeError:
     print("Please use correct data paths or epoch numbers")

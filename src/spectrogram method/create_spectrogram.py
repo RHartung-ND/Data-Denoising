@@ -25,8 +25,33 @@ def generate_spectrogram(audio_path, output_path):
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    input_dir = "sample_data/train-noisy"
-    output_dir = "output/spectrographs/train-noisy"
+    input_dir = None
+    output_dir = None
+    try:
+        with open("src/config.txt", "r") as config:
+            print("----------------------------------------------------------------")
+            line = config.readline() # input_dir_clean
+            args = line.strip().split("=")
+            if len(args) > 1:
+                input_dir_clean = str(args[1].strip())
+                print(f"Using the following testing directory: {input_dir_clean}")
+            
+            line = config.readline() # noisy_dir
+            args = line.strip().split("=")
+            if len(args) > 1:
+                input_dir_noisy = str(args[1].strip())
+                print(f"Using the following training directory: {input_dir_noisy}")
+
+            line = config.readline() # testing_dir
+
+            line = config.readline() # epochs
+            args = line.strip().split("=")
+            if len(args) > 1:
+                epochs = int(args[1].strip())
+                print(f"Running for {epochs} epochs")
+            print("----------------------------------------------------------------")
+    except TypeError:
+        print("Please use correct data paths or epoch numbers")
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)

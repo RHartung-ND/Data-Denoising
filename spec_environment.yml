@@ -1,0 +1,13 @@
+name: sepctrogram_denoiser
+channels:
+    - conda-forge
+dependencies:
+    - python=3.10
+    - pip
+    - pip:
+        - tensorflow
+        - numpy
+        - librosa
+        - soundfile
+        - torch
+        - scikit-learn

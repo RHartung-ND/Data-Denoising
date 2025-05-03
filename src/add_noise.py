@@ -84,8 +84,27 @@ def process_directory(input_dir, output_dir, noise_level=0.1, frequency_range=(4
                 add_high_frequency_noise(input_file, output_file, noise_level, frequency_range)
 
 if __name__ == "__main__":
-    input_directory = "sample_data/train-clean"
-    output_directory = "sample_data/train-noisy"
+    input_directory = None
+    output_directory = None
+    try:
+        with open("src/config.txt", "r") as config:
+            print("----------------------------------------------------------------")
+            line = config.readline() # input_dir_clean
+            args = line.strip().split("=")
+            if len(args) > 1:
+                input_directory = str(args[1].strip())
+                print(f"Using the following testing directory: {input_directory}")
+            
+            line = config.readline() # noisy_dir
+            args = line.strip().split("=")
+            if len(args) > 1:
+                output_directory = str(args[1].strip())
+                print(f"Using the following training directory: {output_directory}")
+            print("----------------------------------------------------------------")
+    except TypeError:
+        print("Please use correct data paths or epoch numbers")
+
+
     noise_strength = 0.05 # Adjust noise level
     frequency_band = (5000, 7500) # Adjust frequency band
 

@@ -1,4 +1,4 @@
-name: denoiser
+name: audio_denoiser
 channels:
     - conda-forge
 dependencies:
