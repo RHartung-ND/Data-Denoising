@@ -6,8 +6,8 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import matplotlib.pyplot as plt
 
-ENCODER_PATH = "./encoder.pth"
-DECODER_PATH = "./decoder.pth"
+ENCODER_PATH = "src/spectrogram method/encoder.pth"
+DECODER_PATH = "src/spectrogram method/decoder.pth"
 INPUT_DIR = None
 OUTPUT_DIR = None
 IMG_SIZE = (128, 128)

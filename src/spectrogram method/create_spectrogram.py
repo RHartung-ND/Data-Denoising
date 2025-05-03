@@ -35,14 +35,14 @@ if __name__ == "__main__":
             line = config.readline() # input_dir_clean
             args = line.strip().split("=")
             if len(args) > 1:
-                input_dir_clean = str(args[1].strip())
-                print(f"Using the following testing directory: {input_dir_clean}")
+                input_dir = str(args[1].strip())
+                print(f"Using the following testing directory: {input_dir}")
             
             line = config.readline() # noisy_dir
             args = line.strip().split("=")
             if len(args) > 1:
-                input_dir_noisy = str(args[1].strip())
-                print(f"Using the following training directory: {input_dir_noisy}")
+                output_dir = str(args[1].strip())
+                print(f"Using the following training directory: {output_dir}")
             print("----------------------------------------------------------------")
     except TypeError:
         print("Please use correct data paths or epoch numbers")

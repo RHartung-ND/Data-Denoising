@@ -113,9 +113,9 @@ def train():
         print(f"Epoch [{epoch+1}/{EPOCHS}], Loss: {running_loss/len(dataloader):.4f}")
 
     # Save full model and separately encoder/decoder
-    torch.save(model.state_dict(), "autoencoder.pth")
-    torch.save(model.encoder.state_dict(), "encoder.pth")
-    torch.save(model.decoder.state_dict(), "decoder.pth")
+    torch.save(model.state_dict(), "src/spectrogram method/autoencoder.pth")
+    torch.save(model.encoder.state_dict(), "src/spectrogram method/encoder.pth")
+    torch.save(model.decoder.state_dict(), "src/spectrogram method/decoder.pth")
     print("Training complete. Models saved.")
 
 if __name__ == "__main__":

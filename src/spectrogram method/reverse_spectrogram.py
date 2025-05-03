@@ -27,30 +27,31 @@ if __name__ == "__main__":
     output_dir = None
 
 
-try:
-    with open("src/config.txt", "r") as config:
-        print("----------------------------------------------------------------")
-        line = config.readline() # input_dir_clean
-        line = config.readline() # input_dir_clean
-        line = config.readline() # input_dir_clean
-        line = config.readline() # input_dir_clean
-        line = config.readline() # input_dir_clean
-        # -------------------------------------------------
-        line = config.readline() # input_dir_clean
-        line = config.readline() # noisy_dir
-        args = line.strip().split("=")
-        if len(args) > 1:
-            input_dir = str(args[1].strip())
-            print(f"Using the following training directory: {input_dir}")
-        line = config.readline() # input_dir_clean
-        line = config.readline() # input_dir_clean
-        args = line.strip().split("=")
-        if len(args) > 1:
-            output_dir = str(args[1].strip())
-            print(f"Using the following training directory: {output_dir}")
-        print("----------------------------------------------------------------")
-except TypeError:
-    print("Please use correct data paths or epoch numbers")
+    try:
+        with open("src/config.txt", "r") as config:
+            print("----------------------------------------------------------------")
+            line = config.readline() # input_dir_clean
+            line = config.readline() # input_dir_clean
+            line = config.readline() # input_dir_clean
+            line = config.readline() # input_dir_clean
+            line = config.readline() # input_dir_clean
+            # -------------------------------------------------
+            line = config.readline() # input_dir_clean
+            line = config.readline() # noisy_dir
+            args = line.strip().split("=")
+            if len(args) > 1:
+                input_dir = str(args[1].strip())
+                print(f"Using the following training directory: {input_dir}")
+            line = config.readline() # input_dir_clean
+            line = config.readline() # input_dir_clean
+            args = line.strip().split("=")
+            if len(args) > 1:
+                output_dir = str(args[1].strip())
+                print(f"Using the following training directory: {output_dir}")
+            print("----------------------------------------------------------------")
+    except TypeError:
+        print("Please use correct data paths or epoch numbers")
+
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     for root, _, files in os.walk(input_dir):
@@ -58,4 +59,3 @@ except TypeError:
             if file.endswith(".png"):
                 input_file = os.path.join(root, file)
                 spectrogram_image_to_audio(input_file, f"{output_dir}/{file[:-4]}.wav")
-                # generate_spectrogram(input_file, f"{output_dir}/{file[:-5]}.png")
