@@ -480,3 +480,8 @@ A neural network-based audio denoising methods show promising results but face s
 The performance degradation observed on the test set highlights the importance of training with diverse and representative data. The gap between synthetic noise used in training and the natural acoustic variations in testing represents a fundamental challenge that must be addressed through more sophisticated data augmentation, architectural innovations, and domain adaptation techniques.
 
 By implementing the proposed improvements, I anticipate significant gains in generalization capability, potentially closing the performance gap between validation and test results while also improving overall denoising quality. Future work will focus on implementing and evaluating these enhancements, with particular emphasis on developing more perceptually aligned loss functions and leveraging the complementary strengths of time-domain and frequency-domain representations.
+
+
+## 5. AI Disclosure
+
+The overwhelming majority of the work is my own. However, I used Claude and Google Gemini while writing this report. They were useful in helping me write better, more intellegent sounding sentences. The core ideas, specific implementations, and analysis of the results are entirely the product of my own thought and experimentation. The AI served as a catalyst for initial exploration and a source of technical suggestions, but the intellectual ownership and the critical evaluation of the project are my own.
