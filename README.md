@@ -283,7 +283,7 @@ The core ideas, specific implementations, and analysis of the results are entire
 
 3. Run the following command to generate the spectrogram conda environment `conda env create --file spec_environment.yml`
 
-4. Run `conda activate denoiser`
+4. Run either `conda activate audio_denoiser` or `conda activate spectrogram_denoiser`
 
 ### Running the Program.
 
@@ -296,6 +296,7 @@ To get started:
 
     Note: Do NOT put quotation marks around the path name. For example, if you want the input to be from your downloads folder, then put: `input_dir_clean = $HOME/Downloads/`
 
+    Note 2: I left config.txt with the default settings so new users can easily get started and see what goes where
 
 #### Spectrogram Method
 
@@ -319,6 +320,14 @@ This should output the audio files to `output/spectrographs/temp`. Unfortunately
 
 If you want to run the various Python scripts quickly and are using Linux, then you can run the `src/scripts/automated.sh` file and choose either the spectrogram method or the audio only method by entering either "s" or "a". This script assumes that your Linux shell is using bash.
 
+
+#### Testing with my pre-trained model
+
+[Here](https://drive.google.com/drive/folders/1SOqFjIWla4S7oljOityx4ok9SI2jtFgV?usp=drive_link) is a link to a google drive folder with pre-trained models for both the audio method and the spectrogram methods.
+
+To test the audio only model, put the `audio_denoiser.keras` file into the following folder: `src/audio method`. Then add the path to your testing folder to the config.txt file. You can then run the `decoder.py` file to test it.
+
+To test the spectrogram model, put the `encoder.pth` and `decoder.pth` file into the following folder: `src/spectrogram method`. Then add the path to your testing folder to the config.txt file. You then have to run the `create_spectrogram.py` file to convert the audio tracks into spectrograms. You can then run the `picture_decoder.py` and then `reverse_spectrogram.py` to output the audio files.
 
 ## Report:
 

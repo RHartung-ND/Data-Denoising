@@ -10,7 +10,7 @@ from tqdm import tqdm
 DATA_DIR = None
 IMG_SIZE = (128, 128)  # Resize all spectrograms to this size
 BATCH_SIZE = 32
-EPOCHS = 30
+EPOCHS = None
 LEARNING_RATE = 1e-3
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -22,6 +22,10 @@ try:
         line = config.readline() # input_dir_clean
         line = config.readline() # input_dir_clean
         line = config.readline() # input_dir_clean
+        args = line.strip().split("=")
+        if len(args) > 1:
+            EPOCHS = int(args[1].strip())
+            print(f"Training with {EPOCHS} epochs")
         line = config.readline() # input_dir_clean
         # -------------------------------------------------
         line = config.readline() # input_dir_clean        
@@ -113,7 +117,7 @@ def train():
         print(f"Epoch [{epoch+1}/{EPOCHS}], Loss: {running_loss/len(dataloader):.4f}")
 
     # Save full model and separately encoder/decoder
-    torch.save(model.state_dict(), "src/spectrogram method/autoencoder.pth")
+    # torch.save(model.state_dict(), "src/spectrogram method/autoencoder.pth")
     torch.save(model.encoder.state_dict(), "src/spectrogram method/encoder.pth")
     torch.save(model.decoder.state_dict(), "src/spectrogram method/decoder.pth")
     print("Training complete. Models saved.")
