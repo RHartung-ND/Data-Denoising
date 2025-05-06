@@ -1,4 +1,4 @@
-name: sepctrogram_denoiser
+name: spectrogram_denoiser
 channels:
     - conda-forge
 dependencies:
